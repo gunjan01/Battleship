@@ -137,4 +137,14 @@ func main() {
 	fmt.Println(game.Players[0].Board)
 	fmt.Println(game.Players[1].Board)
 
+	game.FireMissiles(0, 1)
+	game.FireMissiles(1, 0)
+
+	fmt.Println(game.Players[0].Board)
+	fmt.Println("*******************************")
+	fmt.Println(game.Players[1].Board)
+
+	fmt.Println(game.Players[0].TotalPoints)
+	fmt.Println(game.Players[1].TotalPoints)
+
 }

@@ -13,13 +13,14 @@ func NewGame(numberOfPlayers int) Game {
 }
 
 // SetUpPlayer sets the players boards
-func (g Game) SetUpPlayer(playerNumber, gridSize, totalShips, totalMissiles int, shipPositions, missileMoves []Coordinates) {
+func (g *Game) SetUpPlayer(playerNumber, gridSize, totalShips, totalMissiles int, shipPositions, missileMoves []Coordinates) {
 	if playerNumber < len(g.Players) {
 		player := Player{
 			TotalMissilies:  totalMissiles,
 			TotalShips:      totalShips,
 			ShipCoordinates: shipPositions,
 			HitCoordinates:  missileMoves,
+			TotalPoints:     0,
 		}
 
 		// Set up players board
@@ -31,7 +32,6 @@ func (g Game) SetUpPlayer(playerNumber, gridSize, totalShips, totalMissiles int,
 	}
 }
 
-// Setup phase
-// Fire phase
-// Player 1 fires at player 2
-// Player 2 fires at player 1
+func (g *Game) FireMissiles(player, opponent int) {
+	g.Players[player].FireShots(g.Players[opponent].Board)
+}
