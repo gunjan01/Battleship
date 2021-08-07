@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -46,6 +45,65 @@ func sanitizeInputForCoordinates(input string) []battleship.Coordinates {
 	}
 
 	return coordinatesArray
+}
+
+func generateOutputFile(game battleship.Game) {
+	outputFile, err := os.Create("output.txt")
+	if err != nil {
+		log.Fatal("Error while opening file: ", err)
+	}
+	defer outputFile.Close()
+
+	// Write the player boards to the output file
+	scoreBoard := make(map[int]string)
+	for index := range game.Players {
+		player := game.Players[index]
+		_, err := outputFile.WriteString("Player" + strconv.Itoa(index+1) + "\n")
+
+		scoreBoard[index] = "P" + strconv.Itoa(index+1) + ":" + strconv.Itoa(player.TotalPoints)
+
+		for i := range player.Board.Board {
+			var str string
+			for j := range player.Board.Board[i] {
+				if player.Board.Board[i][j] != "" {
+					str = str + player.Board.Board[i][j] + " "
+				} else {
+					str = str + "_" + " "
+				}
+			}
+
+			// Write the string to file
+			_, err = outputFile.WriteString(str + "\n")
+			if err != nil {
+				log.Fatal("Error while writing to a file: ", err)
+			}
+		}
+		_, err = outputFile.WriteString("\n")
+	}
+
+	// Write point to the output file.
+	for _, value := range scoreBoard {
+		_, err = outputFile.WriteString(value + "\n")
+		if err != nil {
+			log.Fatal("Error while writing to a file: ", err)
+		}
+	}
+
+	// Write the final result to the output file.
+	var finalResult string = "It is a draw"
+	if game.Players[0].TotalPoints > game.Players[1].TotalPoints {
+		finalResult = "Player 1 wins"
+	}
+
+	if game.Players[1].TotalPoints > game.Players[0].TotalPoints {
+		finalResult = "Player 2 wins"
+	}
+
+	_, err = outputFile.WriteString("\n" + finalResult + "\n")
+	if err != nil {
+		log.Fatal("Error while writing to a file: ", err)
+	}
+
 }
 
 func main() {
@@ -134,17 +192,15 @@ func main() {
 	// Setupplayer2
 	game.SetUpPlayer(1, gridSize, totalShips, totalMissiles, p2ShipPositions, p2MissileMoves)
 
-	fmt.Println(game.Players[0].Board)
-	fmt.Println(game.Players[1].Board)
+	//fmt.Println(game.Players[0].Board)
+	//fmt.Println(game.Players[1].Board)
 
 	game.FireMissiles(0, 1)
 	game.FireMissiles(1, 0)
 
-	fmt.Println(game.Players[0].Board)
-	fmt.Println("*******************************")
-	fmt.Println(game.Players[1].Board)
+	//fmt.Println(game.Players[0].TotalPoints)
+	//fmt.Println(game.Players[1].TotalPoints)
 
-	fmt.Println(game.Players[0].TotalPoints)
-	fmt.Println(game.Players[1].TotalPoints)
+	generateOutputFile(game)
 
 }

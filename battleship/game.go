@@ -32,6 +32,7 @@ func (g *Game) SetUpPlayer(playerNumber, gridSize, totalShips, totalMissiles int
 	}
 }
 
+// FireMissiles fires a shot at the opponents board.
 func (g *Game) FireMissiles(player, opponent int) {
 	g.Players[player].FireShots(g.Players[opponent].Board)
 }
