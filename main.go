@@ -6,8 +6,16 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gunjan01/battleship/battleship"
+)
+
+const (
+	// Player represents a battleship player.
+	player int = 0
+	// Opponent represents a battleship Opponent.
+	opponent int = 1
 )
 
 var (
@@ -91,11 +99,11 @@ func generateOutputFile(game battleship.Game) {
 
 	// Write the final result to the output file.
 	var finalResult string = "It is a draw"
-	if game.Players[0].TotalPoints > game.Players[1].TotalPoints {
+	if game.Players[player].TotalPoints > game.Players[opponent].TotalPoints {
 		finalResult = "Player 1 wins"
 	}
 
-	if game.Players[1].TotalPoints > game.Players[0].TotalPoints {
+	if game.Players[opponent].TotalPoints > game.Players[player].TotalPoints {
 		finalResult = "Player 2 wins"
 	}
 
@@ -103,7 +111,6 @@ func generateOutputFile(game battleship.Game) {
 	if err != nil {
 		log.Fatal("Error while writing to a file: ", err)
 	}
-
 }
 
 func main() {
@@ -127,6 +134,11 @@ func main() {
 					// log the fatal error
 					log.Fatal("Error while converting input to int: ", err)
 				}
+
+				// Validate the number of missiles.
+				if !(gridSize > 0 && gridSize < 10) {
+					log.Fatal("Invalid input: The grid size must be greater than 0 and lesser than 10.")
+				}
 			}
 
 		case 1:
@@ -135,16 +147,26 @@ func main() {
 				if err != nil {
 					log.Fatal("Error while converting input to int: ", err)
 				}
+
+				if !(totalShips > 0 && totalShips < ((gridSize*gridSize)/2)) {
+					log.Fatal("Invalid input: Total number of ships are invalid.")
+				}
 			}
 
 		case 2:
 			{
 				p1ShipPositions = sanitizeInputForCoordinates(input)
+				if len(p1ShipPositions) != totalShips {
+					log.Fatal("Invalid input: The total ship coordinates for player 1 must be equal to the number of ships.")
+				}
 			}
 
 		case 3:
 			{
 				p2ShipPositions = sanitizeInputForCoordinates(input)
+				if len(p2ShipPositions) != totalShips {
+					log.Fatal("Invalid input: The total ship coordinates for player 2 must be equal to the number of ships.")
+				}
 			}
 
 		case 4:
@@ -153,16 +175,26 @@ func main() {
 				if err != nil {
 					log.Fatal("Error while converting input to int: ", err)
 				}
+				// Validate the number of missiles.
+				if !(totalMissiles > 0 && totalMissiles < 100) {
+					log.Fatal("Invalid input: The total missiles must be greater than 0 and lesser than 100.")
+				}
 			}
 
 		case 5:
 			{
 				p1MissileMoves = sanitizeInputForCoordinates(input)
+				if len(p1MissileMoves) != totalMissiles {
+					log.Fatal("Invalid input: The total hit coordinates for player 1 must be equal to the total number of missiles.")
+				}
 			}
 
 		case 6:
 			{
 				p2MissileMoves = sanitizeInputForCoordinates(input)
+				if len(p2MissileMoves) != totalMissiles {
+					log.Fatal("Invalid input: The total hit coordinates for player 2 must be equal to the total number of missiles.")
+				}
 			}
 
 		}
@@ -174,33 +206,29 @@ func main() {
 		log.Fatal("Error while reading file: ", err)
 	}
 
-	/*fmt.Println(gridSize)
-	fmt.Println(totalMissiles)
-	fmt.Println(totalShips)
-	fmt.Println(p1ShipPositions)
-	fmt.Println(p2ShipPositions)
-	fmt.Println(p1MissileMoves)
-	fmt.Println(p2MissileMoves)*/
-
 	// Start the game
 	var numberOfPlayers int = 2
 	game := battleship.NewGame(numberOfPlayers)
 
-	// SetupPlayer1
-	game.SetUpPlayer(0, gridSize, totalShips, totalMissiles, p1ShipPositions, p1MissileMoves)
+	// Setup Player and opponent
+	game.SetUpPlayer(player, gridSize, totalShips, totalMissiles, p1ShipPositions, p1MissileMoves)
+	game.SetUpPlayer(opponent, gridSize, totalShips, totalMissiles, p2ShipPositions, p2MissileMoves)
 
-	// Setupplayer2
-	game.SetUpPlayer(1, gridSize, totalShips, totalMissiles, p2ShipPositions, p2MissileMoves)
+	var wg sync.WaitGroup
+	wg.Add(len(game.Players))
 
-	//fmt.Println(game.Players[0].Board)
-	//fmt.Println(game.Players[1].Board)
+	go func() {
+		defer wg.Done()
+		game.FireMissiles(player, opponent)
+	}()
 
-	game.FireMissiles(0, 1)
-	game.FireMissiles(1, 0)
+	go func() {
+		defer wg.Done()
+		game.FireMissiles(opponent, player)
+	}()
 
-	//fmt.Println(game.Players[0].TotalPoints)
-	//fmt.Println(game.Players[1].TotalPoints)
+	// Wait for the routines to finish.
+	wg.Wait()
 
 	generateOutputFile(game)
-
 }
