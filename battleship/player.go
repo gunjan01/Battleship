@@ -13,7 +13,7 @@ type Player struct {
 // PlaceShips places ships on a players board at the given coordinates.
 func (p *Player) PlaceShips(shipCoordinates []Coordinates) {
 	for _, coordinate := range shipCoordinates {
-		p.Board.PlaceShip(coordinate.x, coordinate.y)
+		p.Board.PlaceShip(coordinate.X, coordinate.Y)
 	}
 }
 
@@ -23,13 +23,13 @@ func (p *Player) PlaceShips(shipCoordinates []Coordinates) {
 // On HIT, we advance the players points for each successful shot.
 func (p *Player) FireShots(opponentBoard BattleShipBoard) {
 	for _, coordinate := range p.HitCoordinates {
-		if opponentBoard.Board[coordinate.x][coordinate.y] == "B" {
-			opponentBoard.MarkHit(coordinate.x, coordinate.y)
+		if opponentBoard.Board[coordinate.X][coordinate.Y] == "B" {
+			opponentBoard.MarkHit(coordinate.X, coordinate.Y)
 
 			// Increase present players points.
 			p.TotalPoints = p.TotalPoints + 1
 		} else {
-			opponentBoard.MarkMiss(coordinate.x, coordinate.y)
+			opponentBoard.MarkMiss(coordinate.X, coordinate.Y)
 		}
 	}
 }

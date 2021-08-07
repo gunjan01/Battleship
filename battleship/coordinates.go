@@ -1,13 +1,13 @@
 package battleship
 
 type Coordinates struct {
-	x int
-	y int
+	X int
+	Y int
 }
 
 func (c *Coordinates) New(x, y int) Coordinates {
 	return Coordinates{
-		x: x,
-		y: y,
+		X: x,
+		Y: y,
 	}
 }

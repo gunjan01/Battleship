@@ -6,6 +6,10 @@ type Game struct {
 	PlayerB Player
 }
 
+func (g Game) NewGame(n int) {
+
+}
+
 // SetUpPhase sets the players boards
 func (g Game) SetUpPhase(size, totalMissiles int) {
 
