@@ -116,11 +116,25 @@ func main() {
 		log.Fatal("Error while reading file: ", err)
 	}
 
-	fmt.Println(gridSize)
+	/*fmt.Println(gridSize)
 	fmt.Println(totalMissiles)
 	fmt.Println(totalShips)
 	fmt.Println(p1ShipPositions)
 	fmt.Println(p2ShipPositions)
 	fmt.Println(p1MissileMoves)
-	fmt.Println(p2MissileMoves)
+	fmt.Println(p2MissileMoves)*/
+
+	// Start the game
+	var numberOfPlayers int = 2
+	game := battleship.NewGame(numberOfPlayers)
+
+	// SetupPlayer1
+	game.SetUpPlayer(0, gridSize, totalShips, totalMissiles, p1ShipPositions, p1MissileMoves)
+
+	// Setupplayer2
+	game.SetUpPlayer(1, gridSize, totalShips, totalMissiles, p2ShipPositions, p2MissileMoves)
+
+	fmt.Println(game.Players[0].Board)
+	fmt.Println(game.Players[1].Board)
+
 }
