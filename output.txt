@@ -1,0 +1,18 @@
+Player1
+O O _ _ _ 
+_ X _ _ _ 
+B _ _ X _ 
+_ _ _ _ B 
+_ _ _ X _ 
+
+Player2
+_ X _ _ _ 
+_ _ _ _ _ 
+_ _ _ X _ 
+B O _ _ B 
+_ X _ O _ 
+
+P1:3
+P2:3
+
+It is a draw

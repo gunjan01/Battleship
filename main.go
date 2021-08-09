@@ -217,6 +217,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(len(game.Players))
 
+	// Two independent threads to fire missiles simulataneously.
 	go func() {
 		defer wg.Done()
 		game.FireMissiles(player, opponent)
@@ -227,8 +228,9 @@ func main() {
 		game.FireMissiles(opponent, player)
 	}()
 
-	// Wait for the routines to finish.
+	// Wait for the go routines to finish.
 	wg.Wait()
 
+	// generate the final output.
 	generateOutputFile(game)
 }
