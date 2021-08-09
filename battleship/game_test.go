@@ -127,3 +127,37 @@ func TestSetUpPlayer(t *testing.T) {
 		})
 	}
 }
+
+func TestFireMissiles(t *testing.T) {
+	var (
+		gridSize      int = 5
+		totalShips    int = 5
+		totalMissiles int = 2
+	)
+	missileMoves := []Coordinates{
+		Coordinates{
+			X: 0,
+			Y: 0,
+		},
+		Coordinates{
+			X: 1,
+			Y: 1,
+		},
+	}
+	//p2MissileMoves  []battleship.Coordinates
+	game := NewGame(2)
+	game.SetUpPlayer(0, gridSize, totalShips, totalMissiles, []Coordinates{}, missileMoves)
+	game.SetUpPlayer(1, gridSize, totalShips, totalMissiles, []Coordinates{}, []Coordinates{})
+
+	// Player 0 fires at player 1.
+	game.FireMissiles(0, 1)
+
+	opponent := game.Players[1]
+	// We check the coordinated on player 1's board.
+	for _, coordinate := range missileMoves {
+		if opponent.Board.Board[coordinate.X][coordinate.Y] != MARK_HIT && opponent.Board.Board[coordinate.X][coordinate.Y] != MARK_MISS {
+			t.Errorf("Test failed: Expected a hit or miss marked here")
+		}
+	}
+
+}

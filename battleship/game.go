@@ -12,7 +12,7 @@ func NewGame(numberOfPlayers int) Game {
 	}
 }
 
-// SetUpPlayer sets the players boards
+// SetUpPlayer sets the players boards and places relevant ships.
 func (g *Game) SetUpPlayer(playerNumber, gridSize, totalShips, totalMissiles int, shipPositions, missileMoves []Coordinates) {
 	if playerNumber < len(g.Players) {
 		player := Player{
